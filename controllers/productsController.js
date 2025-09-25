@@ -3,6 +3,7 @@ let products = [
   { id: 2, name: "Shirt", category: "Clothing" },
 ];
 
+feature/crud-operations
 const createProduct = (req, res) => {
   const { name, category } = req.body;
   if (!name || !category) {
@@ -41,6 +42,8 @@ const deleteProduct = (req, res) => {
   res.json(deleted[0]);
 };
 
+=======
+ master
 const getAllProducts = (req, res) => {
   const { category, name } = req.query;
   let result = products;
@@ -65,6 +68,7 @@ const getSingleProduct = (req, res) => {
   res.json(product);
 };
 
+ feature/crud-operations
 module.exports = {
   getAllProducts,
   getSingleProduct,
@@ -72,3 +76,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
 };
+=======
+module.exports = { getAllProducts, getSingleProduct, products };
+ master
