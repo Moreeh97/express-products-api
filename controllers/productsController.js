@@ -1,81 +1,55 @@
-let products = [
-  { id: 1, name: "Laptop", category: "Electronics" },
-  { id: 2, name: "Shirt", category: "Clothing" },
-];
+const Product = require("../models/productModel");
 
-feature/crud-operations
-const createProduct = (req, res) => {
-  const { name, category } = req.body;
-  if (!name || !category) {
-    return res.status(400).json({ message: "Name and category are required" });
+// Get all products
+exports.getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find();
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-
-  const newProduct = { id: products.length + 1, name, category };
-  products.push(newProduct);
-  res.status(201).json(newProduct);
 };
 
-const updateProduct = (req, res) => {
-  const id = parseInt(req.params.id);
-  const product = products.find(p => p.id === id);
-
-  if (!product) {
-    return res.status(404).json({ message: "Product not found" });
+// Get single product
+exports.getSingleProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-
-  const { name, category } = req.body;
-  if (name) product.name = name;
-  if (category) product.category = category;
-
-  res.json(product);
 };
 
-const deleteProduct = (req, res) => {
-  const id = parseInt(req.params.id);
-  const index = products.findIndex(p => p.id === id);
-
-  if (index === -1) {
-    return res.status(404).json({ message: "Product not found" });
+// Create product
+exports.createProduct = async (req, res) => {
+  try {
+    const product = new Product(req.body);
+    const saved = await product.save();
+    res.status(201).json(saved);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
-
-  const deleted = products.splice(index, 1);
-  res.json(deleted[0]);
 };
 
-=======
- master
-const getAllProducts = (req, res) => {
-  const { category, name } = req.query;
-  let result = products;
-
-  if (category) {
-    result = result.filter(p => p.category.toLowerCase() === category.toLowerCase());
+// Update product
+exports.updateProduct = async (req, res) => {
+  try {
+    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updated) return res.status(404).json({ message: "Product not found" });
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
-  if (name) {
-    result = result.filter(p => p.name.toLowerCase().includes(name.toLowerCase()));
-  }
-
-  res.json(result);
 };
 
-const getSingleProduct = (req, res) => {
-  const id = parseInt(req.params.id);
-  const product = products.find(p => p.id === id);
-
-  if (!product) {
-    return res.status(404).json({ message: "Product not found" });
+// Delete product
+exports.deleteProduct = async (req, res) => {
+  try {
+    const deleted = await Product.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: "Product not found" });
+    res.json({ message: "Product deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-  res.json(product);
 };
-
- feature/crud-operations
-module.exports = {
-  getAllProducts,
-  getSingleProduct,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-};
-=======
-module.exports = { getAllProducts, getSingleProduct, products };
- master
